@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import com.example.locationapp.ui.theme.LocationAppTheme
 
@@ -62,7 +61,7 @@ fun LocationDisplay(LocationUtils:LocationUtils ,
                     context as MainActivity ,
                     Manifest.permission.ACCESS_FINE_LOCATION
                 ) || ActivityCompat.shouldShowRequestPermissionRationale(
-                    context as MainActivity ,
+                    context  ,
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 )
 
