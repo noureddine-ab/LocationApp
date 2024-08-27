@@ -3,6 +3,7 @@ package com.example.locationapp
 import android.content.Context
 import android.os.Bundle
 import android.Manifest
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -17,7 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
 import com.example.locationapp.ui.theme.LocationAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -30,13 +33,19 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
+                    MyApp()
                 }
             }
         }
     }
 }
 
+@Composable
+fun MyApp(){
+    val context = LocalContext.current
+    val locationUtils = LocationUtils(context)
+    LocationDisplay(LocationUtils = locationUtils, context = context)
+}
 
 @Composable
 fun LocationDisplay(LocationUtils:LocationUtils ,
@@ -49,7 +58,19 @@ fun LocationDisplay(LocationUtils:LocationUtils ,
                 && permissions[Manifest.permission.ACCESS_FINE_LOCATION]==true ){
                 // I have access to location
             }else{
-                // Ask for permission
+                val rationalRequired = ActivityCompat.shouldShowRequestPermissionRationale(
+                    context as MainActivity ,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                    context as MainActivity ,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+
+                if (rationalRequired){
+                    Toast.makeText(context,"Location Permission is required for this feature to work",Toast.LENGTH_LONG).show()
+                }else{
+                    Toast.makeText(context,"Location Permission is required Please enable it in Settings",Toast.LENGTH_LONG).show()
+                }
             }
 
         })
@@ -67,7 +88,13 @@ fun LocationDisplay(LocationUtils:LocationUtils ,
             if (LocationUtils.hasLocationPermission(context)){
                 // Permission Already Granted update the location
             }else{
-                // Request location permission
+                requestPermissionLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                )
+
             }
         }) {
             Text(text = "Get Location")
